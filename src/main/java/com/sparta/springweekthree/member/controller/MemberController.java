@@ -35,19 +35,15 @@ public class MemberController {
 
         return new ResponseEntity<>(authMessage, OK);
     }
-
     @PostMapping("auth/login")
     public ResponseEntity<AuthMessage> login(@RequestBody LoginRequestDto loginDto, HttpServletResponse response) {
-        String memberToken;
-
         try {
-            memberToken = memberService.login(loginDto);
+            memberService.login(loginDto, response);
         }
         catch (IllegalArgumentException e) {
             AuthMessage authMessage = new AuthMessage("회원을 찾을 수 없습니다.", BAD_REQUEST.value());
             return new ResponseEntity<>(authMessage, BAD_REQUEST);
         }
-        response.addHeader("Authorization", memberToken);
 
         AuthMessage authMessage = new AuthMessage("로그인 성공", OK.value());
         return new ResponseEntity<>(authMessage, OK);
