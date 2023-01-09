@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.sparta.springweekthree.member.entity.MemberGrade.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +29,6 @@ public class BulletinBoardService {
         String token = jwtUtil.resolveToken(request);
 
         if (token == null) {
-            return null;
-        }
-
-        if (!jwtUtil.validateToken(token)) {
             return null;
         }
 
@@ -65,24 +60,9 @@ public class BulletinBoardService {
     }
 
     @Transactional
-    public ResultDto softDelete(Long id, HttpServletRequest request) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-        Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow();
-
-        if (token == null) {
-            return null;
-        }
-
-        if (!jwtUtil.validateToken(token) || member.getGrade().equals(ADMIN)) {
-            return null;
-        }
-
-        if (!board.getMember().getId().equals(member.getId())) {
-            throw new IllegalAccessException("작성자만 삭제/수정할 수 있습니다.");
-        }
+    public ResultDto softDelete(Long id, Member member) throws IllegalAccessException {
+        BulletinBoard board = bulletinBoardRepository.findByIdAndMemberId(id, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다."));
 
         board.softDelete(true);
 
@@ -90,14 +70,7 @@ public class BulletinBoardService {
     }
 
     @Transactional
-    public Message update(Long id, BulletinBoardForm boardForm, HttpServletRequest request) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-
-        String token = jwtUtil.resolveToken(request);
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-        Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow();
-
-        log.info("board Id = {} memberId = {}", id, member.getId());
+    public Message update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
         BulletinBoard board = bulletinBoardRepository.findByIdAndMemberId(id, member.getId())
                 .orElseThrow(() -> new IllegalAccessException("작성자만 삭제/수정 할 수 있습니다."));
 

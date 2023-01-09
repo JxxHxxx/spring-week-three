@@ -59,15 +59,12 @@ public class BulletinBoardController {
 
     // 선택 게시글 삭제
     @DeleteMapping("/bulletin-boards/{id}")
-    public ResponseEntity<Object> remove(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Object> remove(@PathVariable Long id, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         ResultDto resultDto = null;
         try {
-            resultDto = bulletinBoardService.softDelete(id, request);
+            resultDto = bulletinBoardService.softDelete(id, memberDetails.getMember());
         } catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage("작성자만 삭제/수정할 수 있습니다.", BAD_REQUEST), BAD_REQUEST);
-        }
-        catch (RuntimeException e) {
-            return new ResponseEntity<>(new ExceptionMessage("토큰이 유효하지 않습니다.",BAD_REQUEST), BAD_REQUEST);
+            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(resultDto, OK);
