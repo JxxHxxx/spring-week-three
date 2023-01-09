@@ -1,6 +1,6 @@
 package com.sparta.springweekthree.jwt;
 
-import com.sparta.springweekthree.security.MemberDetailsServiceImpl;
+import com.sparta.springweekthree.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class JwtUtil {
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-    private final MemberDetailsServiceImpl memberDetailsService;
+    private final UserDetailsServiceImpl memberDetailsService;
 
     @PostConstruct
     public void init() {
