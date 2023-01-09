@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -26,7 +27,7 @@ public class Comment extends Timestamped {
     private String body;
     private Boolean isDeleted;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "BULLETIN_BOARD_ID")
     @JsonProperty(access = WRITE_ONLY)
     private BulletinBoard bulletinBoard;
