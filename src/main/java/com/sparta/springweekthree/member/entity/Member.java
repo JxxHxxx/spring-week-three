@@ -3,14 +3,12 @@ package com.sparta.springweekthree.member.entity;
 import com.sparta.springweekthree.member.dto.SignUpRequestDto;
 import com.sparta.springweekthree.util.TimeStamped;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
-
 import static com.sparta.springweekthree.member.entity.MemberRole.USER;
 import static javax.persistence.GenerationType.*;
 
@@ -42,11 +40,7 @@ public class Member extends TimeStamped {
         this.role = USER;
     }
 
-    @Builder
-    public Member(Long id, String username, String password, MemberRole role) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    public void changeRole(MemberRole role) {
         this.role = role;
     }
 }
