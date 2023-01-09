@@ -52,7 +52,6 @@ public class CommentService {
 
     public List<Comment> read(Long id) {
         List<Comment> comments = commentRepository.findByBulletinBoard_Id(id);
-        comments.forEach(comment -> log.info("comment : body = {}, isDeleted = {}", comment.getBody(), comment.getIsDeleted()));
         return comments.stream().filter(comment -> comment.getIsDeleted() != true).collect(Collectors.toList());
     }
 }

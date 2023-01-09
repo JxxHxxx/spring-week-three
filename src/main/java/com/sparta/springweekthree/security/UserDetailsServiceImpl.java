@@ -2,7 +2,6 @@ package com.sparta.springweekthree.security;
 
 import com.sparta.springweekthree.member.entity.Member;
 import com.sparta.springweekthree.member.repository.MemberRepository;
-import com.sparta.springweekthree.security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MemberDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
@@ -28,6 +27,6 @@ public class MemberDetailsServiceImpl implements UserDetailsService {
         log.info("MemberDetailsServiceImpl.loadUserByUsername : {}", username);
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return new MemberDetailsImpl(member, member.getUsername());
+        return new UserDetailsImpl(member, member.getUsername());
     }
 }

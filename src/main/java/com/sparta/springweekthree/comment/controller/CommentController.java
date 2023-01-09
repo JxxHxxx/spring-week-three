@@ -4,7 +4,7 @@ import com.sparta.springweekthree.comment.dto.CommentForm;
 import com.sparta.springweekthree.comment.dto.DeleteMessage;
 import com.sparta.springweekthree.comment.service.CommentService;
 import com.sparta.springweekthree.exception.dto.ExceptionMessage;
-import com.sparta.springweekthree.security.MemberDetailsImpl;
+import com.sparta.springweekthree.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,13 +20,13 @@ public class CommentController {
 
     //댓글 작성
     @PostMapping("/bulletin-boards/{board-id}/comments")
-    public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+    public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         return commentService.write(boardId, commentForm, memberDetails.getMember());
     }
 
     //댓글 수정
     @PatchMapping("/bulletin-boards/{board-id}/comments/{comment-id}")
-    public ResponseEntity<Object> update(@PathVariable(name = "comment-id") Long commentId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+    public ResponseEntity<Object> update(@PathVariable(name = "comment-id") Long commentId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         CommentForm comment = null;
         try {
             comment = commentService.update(commentId, commentForm, memberDetails.getMember());
@@ -40,7 +40,7 @@ public class CommentController {
 
     //댓글 삭제
     @DeleteMapping("/bulletin-boards/{board-id}/comments/{comment-id}")
-    public ResponseEntity<Object> softDelete(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+    public ResponseEntity<Object> softDelete(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         DeleteMessage deleteMessage = null;
         try {
             deleteMessage = commentService.softDelete(commentId, memberDetails.getMember());

@@ -10,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import com.sparta.springweekthree.security.MemberDetailsImpl;
+import com.sparta.springweekthree.security.UserDetailsImpl;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -28,8 +27,7 @@ public class BulletinBoardController {
 
     // 게시글 작성
     @PostMapping("/bulletin-boards")
-    public ResponseEntity<Object> write(@RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
-        log.info("[BulletinBoardController write() 실행]");
+    public ResponseEntity<Object> write(@RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         return new ResponseEntity<>(bulletinBoardService.create(boardForm, memberDetails.getMember()), OK);
     }
 
@@ -49,7 +47,7 @@ public class BulletinBoardController {
     }
     // 선택 게시글 수정
     @PatchMapping("/bulletin-boards/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         Message message = null;
         try {
             message = bulletinBoardService.update(id, boardForm, memberDetails.getMember());
@@ -62,7 +60,7 @@ public class BulletinBoardController {
 
     // 선택 게시글 삭제
     @DeleteMapping("/bulletin-boards/{id}")
-    public ResponseEntity<Object> remove(@PathVariable Long id, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+    public ResponseEntity<Object> remove(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         ResultDto resultDto = null;
         try {
             resultDto = bulletinBoardService.softDelete(id, memberDetails.getMember());

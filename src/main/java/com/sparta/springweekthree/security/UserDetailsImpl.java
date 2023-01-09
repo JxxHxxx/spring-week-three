@@ -2,7 +2,6 @@ package com.sparta.springweekthree.security;
 
 import com.sparta.springweekthree.member.entity.Member;
 import com.sparta.springweekthree.member.entity.MemberRole;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +15,12 @@ import java.util.Collection;
  */
 
 
-public class MemberDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private final Member member;
     private final String username;
 
-    public MemberDetailsImpl(Member member, String username) {
+    public UserDetailsImpl(Member member, String username) {
         this.member = member;
         this.username = username;
     }
