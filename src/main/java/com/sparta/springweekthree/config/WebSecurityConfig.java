@@ -2,7 +2,6 @@ package com.sparta.springweekthree.config;
 
 import com.sparta.springweekthree.jwt.JwtAuthFilter;
 import com.sparta.springweekthree.jwt.JwtUtil;
-import com.sparta.springweekthree.security.MemberDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig  {
 
-    private final MemberDetailsServiceImpl memberDetailsService;
     private final JwtUtil jwtUtil;
 
     @Bean
@@ -56,43 +54,6 @@ public class WebSecurityConfig  {
                 // JWT 인증/인가를 사용하기 위한 설정 이건 모든 URI가 다돌아.
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-
-//        http.formLogin().loginProcessingUrl("auth/login/v2");
-
         return http.build();
     }
 }
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//
-//        return (web -> web.ignoring()
-//                .requestMatchers(PathRequest.toH2Console())
-//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
-//    }
-//
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable();
-//
-//        // JWT 방식 설정
-//        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//
-//        http.authorizeRequests().antMatchers("/auth/**").permitAll()
-//                                .anyRequest().authenticated()
-//                                .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-//
-//        //로그인 사용
-//        http.formLogin().loginProcessingUrl("auth/login/v2");
-
-//                .usernameParameter("username")
-//                .passwordParameter("password")
-
-//        http.addFilterBefore(new CustomSecurityFilter(memberDetailsService, passwordEncoder()), UsernamePasswordAuthenticationFilter.class);
-//                .antMatcher("/auto/login/v2");
