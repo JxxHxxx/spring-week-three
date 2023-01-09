@@ -41,4 +41,12 @@ public class Member extends TimeStamped {
         this.password = requestDto.getPassword();
         this.role = USER;
     }
+
+    @Builder
+    public Member(Long id, String username, String password, MemberRole role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 }
