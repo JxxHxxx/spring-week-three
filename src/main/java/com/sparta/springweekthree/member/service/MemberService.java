@@ -7,8 +7,10 @@ import com.sparta.springweekthree.member.entity.Member;
 import com.sparta.springweekthree.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Service
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     private final String SIGNUP_SUCCESS = "회원가입 성공";
@@ -25,25 +28,27 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 유저이름입니다.");
         }
 
-        Member signUpMember = new Member(requestDto);
-        memberRepository.save(signUpMember);
+        Member member = new Member(requestDto);
+        member.encryptPassword(passwordEncoder);
+        memberRepository.save(member);
 
         return SIGNUP_SUCCESS;
     }
 
-    public String login(LoginRequestDto loginDto) {
-        Optional<Member> findMember = memberRepository.findByUsername(loginDto.getUsername());
+    @Transactional(readOnly = true)
+    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
 
-        if (findMember.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
+
+        Member member = memberRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+        );
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(password, member.getPassword())){
+            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        Member presentMember = findMember.orElseThrow();
-
-        if (!presentMember.getPassword().equals(loginDto.getPassword())) {
-            throw new IllegalArgumentException("아이디/비밀번호가 일치하지 않습니다.");
-        }
-
-        return jwtUtil.createToken(presentMember.getUsername());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
     }
 }
