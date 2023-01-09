@@ -5,6 +5,7 @@ import com.sparta.springweekthree.bulletinboard.dto.*;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.comment.service.CommentService;
 import com.sparta.springweekthree.exception.dto.ExceptionMessage;
+import com.sparta.springweekthree.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,13 @@ public class BulletinBoardController {
 
     private final BulletinBoardService bulletinBoardService;
     private final CommentService commentService;
+    private final LikeService likeService;
 
     // 게시글 작성
     @PostMapping("/bulletin-boards")
-    public BulletinBoardResponseDto write(@RequestBody BulletinBoardForm boardForm, HttpServletRequest request) {
-        return bulletinBoardService.create(boardForm, request);
+    public ResponseEntity<Object> write(@RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+        log.info("[BulletinBoardController write() 실행]");
+        return new ResponseEntity<>(bulletinBoardService.create(boardForm, memberDetails.getMember()), OK);
     }
 
     // 전체 게시글 조회
@@ -40,10 +43,10 @@ public class BulletinBoardController {
     public BulletinBoardResponseDto readOne(@PathVariable Long id) {
         List<Comment> comments = commentService.read(id);
         BulletinBoardResponseDto board = bulletinBoardService.readOne(id);
+        Integer totalLikes = likeService.calculateLikes(id);
 
-        return new BulletinBoardResponseDto(board, comments);
+        return new BulletinBoardResponseDto(board, comments, totalLikes);
     }
-
     // 선택 게시글 수정
     @PatchMapping("/bulletin-boards/{id}")
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
