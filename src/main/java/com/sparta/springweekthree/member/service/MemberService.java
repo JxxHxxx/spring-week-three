@@ -4,6 +4,7 @@ import com.sparta.springweekthree.jwt.JwtUtil;
 import com.sparta.springweekthree.member.dto.LoginRequestDto;
 import com.sparta.springweekthree.member.dto.SignUpRequestDto;
 import com.sparta.springweekthree.member.entity.Member;
+import com.sparta.springweekthree.member.entity.MemberRole;
 import com.sparta.springweekthree.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,5 +51,11 @@ public class MemberService {
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
+    }
+
+    @Transactional
+    public void giveAdminRole(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow();
+        member.changeRole(MemberRole.ADMIN);
     }
 }
