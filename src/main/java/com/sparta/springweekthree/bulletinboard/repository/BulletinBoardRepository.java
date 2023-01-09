@@ -12,8 +12,5 @@ import java.util.Optional;
 public interface BulletinBoardRepository extends JpaRepository<BulletinBoard, Long> {
 
     List<BulletinBoard> findAllByOrderByCreateAtDesc();
-
-    BulletinBoard findByTitle(String title);
-
     Optional<BulletinBoard> findByIdAndMemberId(Long id, Long userId);
 }
