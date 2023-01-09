@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.sparta.springweekthree.security.UserDetailsImpl;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -36,6 +35,7 @@ public class BulletinBoardController {
     public List<BulletinBoardResponseDto> readAll() {
         return bulletinBoardService.readAll();
     }
+
     // 선택 게시글 조회
     @GetMapping("/bulletin-boards/{id}")
     public BulletinBoardResponseDto readOne(@PathVariable Long id) {
@@ -45,6 +45,7 @@ public class BulletinBoardController {
 
         return new BulletinBoardResponseDto(board, comments, totalLikes);
     }
+
     // 선택 게시글 수정
     @PatchMapping("/bulletin-boards/{id}")
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {

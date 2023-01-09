@@ -32,7 +32,7 @@ public class CommentController {
             comment = commentService.update(commentId, commentForm, memberDetails.getMember());
         }
         catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage("작성자만 삭제/수정할 수 있습니다.", BAD_REQUEST), BAD_REQUEST);
+            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(comment, OK);
@@ -46,7 +46,7 @@ public class CommentController {
             deleteMessage = commentService.softDelete(commentId, memberDetails.getMember());
         }
         catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage("작성자만 삭제/수정할 수 있습니다.", BAD_REQUEST), BAD_REQUEST);
+            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(deleteMessage, deleteMessage.getHttpStatus());

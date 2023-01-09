@@ -4,6 +4,7 @@ import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.bulletinboard.repository.BulletinBoardRepository;
 import com.sparta.springweekthree.comment.service.CommentService;
 import com.sparta.springweekthree.member.entity.Member;
+import com.sparta.springweekthree.member.entity.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ public class BulletinBoardService {
 
     private final BulletinBoardRepository bulletinBoardRepository;
     private final CommentService commentService;
+
+    private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
 
     public BulletinBoardResponseDto create(BulletinBoardForm boardForm, Member member) {
         BulletinBoard board = new BulletinBoard(boardForm, member);
@@ -45,21 +48,24 @@ public class BulletinBoardService {
 
     @Transactional
     public ResultDto softDelete(Long id, Member member) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findByIdAndMemberId(id, member.getId())
-                .orElseThrow(() -> new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다."));
+        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
 
-        board.softDelete(true);
+        if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+            board.softDelete(true);
+            return new ResultDto(true);
+        }
 
-        return new ResultDto(true);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     @Transactional
     public Message update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findByIdAndMemberId(id, member.getId())
-                .orElseThrow(() -> new IllegalAccessException("작성자만 삭제/수정 할 수 있습니다."));
+        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
 
-        board.update(boardForm);
-
-        return new Message("수정 성공", new BulletinBoardResponseDto(board));
+        if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+            board.update(boardForm);
+            return new Message("수정 성공", new BulletinBoardResponseDto(board));
+        }
+        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 }

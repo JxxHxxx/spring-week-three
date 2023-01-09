@@ -7,6 +7,7 @@ import com.sparta.springweekthree.comment.dto.DeleteMessage;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.comment.repository.CommentRepository;
 import com.sparta.springweekthree.member.entity.Member;
+import com.sparta.springweekthree.member.entity.MemberRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,11 @@ import static org.springframework.http.HttpStatus.*;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final BulletinBoardRepository bulletinBoardRepository;
+
+    private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
 
     public CommentForm write(Long boardId, CommentForm commentForm, Member member) {
         BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId).orElseThrow(); // 게시글 유무 확인
@@ -34,20 +38,26 @@ public class CommentService {
 
     @Transactional
     public CommentForm update(Long commentId, CommentForm commentForm, Member member) throws IllegalAccessException {
-        Comment comment = commentRepository.findByIdAndUsername(commentId, member.getUsername())
-                .orElseThrow(() -> new IllegalAccessException("작성자만 삭제/수정할 수 있습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
 
-        Comment updateComment = comment.update(commentForm.getBody());
-        return new CommentForm(updateComment);
+        if (comment.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+            Comment updateComment = comment.update(commentForm.getBody());
+            return new CommentForm(updateComment);
+        }
+
+        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     @Transactional
     public DeleteMessage softDelete(Long commentId, Member member) throws IllegalAccessException {
-        Comment comment = commentRepository.findByIdAndUsername(commentId, member.getUsername())
-                .orElseThrow(() -> new IllegalAccessException("작성자만 삭제/수정할 수 있습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
 
-        comment.setSoftDelete();
-        return new DeleteMessage("삭제 성공", OK);
+        if (comment.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+            comment.softDelete();
+            return new DeleteMessage("삭제 성공", OK);
+        }
+
+        throw  new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     public List<Comment> read(Long id) {
