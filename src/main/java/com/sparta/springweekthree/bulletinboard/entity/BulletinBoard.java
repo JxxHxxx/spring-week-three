@@ -4,6 +4,7 @@ import com.sparta.springweekthree.util.BaseEntity;
 import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.member.entity.Member;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BulletinBoard extends BaseEntity {
 
     @Id @Column(name = "BULLETIN_BOARD_ID")

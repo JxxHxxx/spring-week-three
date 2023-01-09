@@ -2,6 +2,8 @@ package com.sparta.springweekthree.member.entity;
 
 import com.sparta.springweekthree.member.dto.SignUpRequestDto;
 import com.sparta.springweekthree.util.TimeStamped;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +16,7 @@ import static javax.persistence.GenerationType.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Validated
 public class Member extends TimeStamped {
 
