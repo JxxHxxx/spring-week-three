@@ -1,4 +1,4 @@
-package com.sparta.springweekthree;
+package com.sparta.springweekthree.util;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class Timestamped {
+public class TimeStamped {
 
     @CreatedDate
     private LocalDateTime createAt;
 
     @LastModifiedDate
     private LocalDateTime modifiedAt;
+
 }
