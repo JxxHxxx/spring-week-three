@@ -3,15 +3,11 @@ import com.sparta.springweekthree.bulletinboard.dto.*;
 import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.bulletinboard.repository.BulletinBoardRepository;
 import com.sparta.springweekthree.comment.service.CommentService;
-import com.sparta.springweekthree.jwt.JwtUtil;
 import com.sparta.springweekthree.member.entity.Member;
-import com.sparta.springweekthree.member.repository.MemberRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,20 +17,9 @@ import java.util.stream.Collectors;
 public class BulletinBoardService {
 
     private final BulletinBoardRepository bulletinBoardRepository;
-    private final MemberRepository memberRepository;
     private final CommentService commentService;
-    private final JwtUtil jwtUtil;
 
-    public BulletinBoardResponseDto create(BulletinBoardForm boardForm, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-
-        if (token == null) {
-            return null;
-        }
-
-        Claims claims = jwtUtil.getUserInfoFromToken(token);
-        Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow();
-
+    public BulletinBoardResponseDto create(BulletinBoardForm boardForm, Member member) {
         BulletinBoard board = new BulletinBoard(boardForm, member);
         BulletinBoard saveBoard = bulletinBoardRepository.save(board);
 
@@ -46,7 +31,6 @@ public class BulletinBoardService {
                 .stream().filter(bulletinBoard -> bulletinBoard.getIsDeleted() == null).collect(Collectors.toList());
 
         return boards.stream().map(bulletinBoard -> new BulletinBoardResponseDto(bulletinBoard, commentService.read(bulletinBoard.getId()))).collect(Collectors.toList());
-
     }
 
     public BulletinBoardResponseDto readOne(Long id) {
