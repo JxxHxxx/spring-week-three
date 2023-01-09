@@ -1,7 +1,7 @@
 package com.sparta.springweekthree.member.entity;
 
-import com.sparta.springweekthree.Timestamped;
 import com.sparta.springweekthree.member.dto.SignUpRequestDto;
+import com.sparta.springweekthree.util.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +16,7 @@ import static javax.persistence.GenerationType.*;
 @Getter
 @NoArgsConstructor
 @Validated
-public class Member extends Timestamped {
+public class Member extends TimeStamped {
 
     @Id @Column(name = "MEMBER_ID")
     @GeneratedValue(strategy = IDENTITY)

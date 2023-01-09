@@ -1,6 +1,6 @@
 package com.sparta.springweekthree.bulletinboard.entity;
 
-import com.sparta.springweekthree.Timestamped;
+import com.sparta.springweekthree.util.BaseEntity;
 import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.member.entity.Member;
@@ -16,7 +16,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor
-public class BulletinBoard extends Timestamped {
+public class BulletinBoard extends BaseEntity {
 
     @Id @Column(name = "BULLETIN_BOARD_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
