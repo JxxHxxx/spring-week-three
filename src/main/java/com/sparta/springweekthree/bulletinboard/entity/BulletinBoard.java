@@ -11,6 +11,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -24,12 +26,11 @@ public class BulletinBoard extends Timestamped {
     @Column(nullable = false)
     private String body;
     private Boolean isDeleted;
-
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToMany(mappedBy = "bulletinBoard", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bulletinBoard", fetch = LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     public BulletinBoard(BulletinBoardForm boardForm, Member member) {
@@ -43,7 +44,7 @@ public class BulletinBoard extends Timestamped {
         this.title = boardForm.getTitle();
         this.body = boardForm.getBody();
     }
-    public String getUsername() {
+    public String readUsername() {
         return this.member.getUsername();
     }
 
