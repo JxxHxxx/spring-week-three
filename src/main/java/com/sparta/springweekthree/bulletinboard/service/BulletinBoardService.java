@@ -97,18 +97,12 @@ public class BulletinBoardService {
         Claims claims = jwtUtil.getUserInfoFromToken(token);
         Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow();
 
-        if (token == null) {
-        }
-        
-        if (!jwtUtil.validateToken(token) || member.getGrade().equals(ADMIN)) {
-        }
-
-        if (!board.getMember().getId().equals(member.getId())) {
-            throw new IllegalAccessException("작성자만 삭제/수정할 수 있습니다.");
-        }
+        log.info("board Id = {} memberId = {}", id, member.getId());
+        BulletinBoard board = bulletinBoardRepository.findByIdAndMemberId(id, member.getId())
+                .orElseThrow(() -> new IllegalAccessException("작성자만 삭제/수정 할 수 있습니다."));
 
         board.update(boardForm);
 
-        return new Message(true, new BulletinBoardResponseDto(board));
+        return new Message("수정 성공", new BulletinBoardResponseDto(board));
     }
 }

@@ -8,6 +8,8 @@ import com.sparta.springweekthree.exception.dto.ExceptionMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.sparta.springweekthree.security.MemberDetailsImpl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,20 +46,12 @@ public class BulletinBoardController {
 
     // 선택 게시글 수정
     @PatchMapping("/bulletin-boards/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, HttpServletRequest request) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
         Message message = null;
         try {
-            message = bulletinBoardService.update(id, boardForm, request);
-        }
-        catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage("작성자만 삭제/수정할 수 있습니다.", BAD_REQUEST), BAD_REQUEST);
-        }
-        catch (RuntimeException e) {
-            return new ResponseEntity<>(new ExceptionMessage("토큰이 유효하지 않습니다.",BAD_REQUEST), BAD_REQUEST);
-        }
-
-        if (message.getSuccess() == false) {
-            return new ResponseEntity<>(message, UNAUTHORIZED);
+            message = bulletinBoardService.update(id, boardForm, memberDetails.getMember());
+        } catch (IllegalAccessException e) {
+            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(message, OK);
