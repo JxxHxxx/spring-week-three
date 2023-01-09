@@ -4,11 +4,12 @@ import com.sparta.springweekthree.Timestamped;
 import com.sparta.springweekthree.member.dto.SignUpRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 
-import static com.sparta.springweekthree.member.entity.MemberGrade.USER;
+import static com.sparta.springweekthree.member.entity.MemberRole.USER;
 import static javax.persistence.GenerationType.*;
 
 @Entity
@@ -26,11 +27,16 @@ public class Member extends Timestamped {
     private String password;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberGrade grade;
+    private MemberRole role;
+
+    public Member encryptPassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+        return this;
+    }
 
     public Member(SignUpRequestDto requestDto) {
         this.username = requestDto.getUsername();
         this.password = requestDto.getPassword();
-        this.grade = USER;
+        this.role = USER;
     }
 }
