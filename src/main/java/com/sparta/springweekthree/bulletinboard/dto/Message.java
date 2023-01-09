@@ -5,11 +5,11 @@ import lombok.Getter;
 @Getter
 public class Message {
 
-    private Boolean success;
-    private Object data;
+    private final String msg;
+    private final Object data;
 
-    public Message(Boolean success, Object data) {
-        this.success = success;
+    public Message(String msg, Object data) {
+        this.msg = msg;
         this.data = data;
     }
 }
