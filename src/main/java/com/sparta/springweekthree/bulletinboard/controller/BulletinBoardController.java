@@ -49,26 +49,28 @@ public class BulletinBoardController {
     // 선택 게시글 수정
     @PatchMapping("/bulletin-boards/{id}")
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody BulletinBoardForm boardForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
-        Message message = null;
+        OkMessage message = null;
         try {
             message = bulletinBoardService.update(id, boardForm, memberDetails.getMember());
         } catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
+            ExceptionMessage exceptionMessage = new ExceptionMessage(e.getMessage(), BAD_REQUEST);
+            return new ResponseEntity<>(exceptionMessage, exceptionMessage.getStatus());
         }
 
-        return new ResponseEntity<>(message, OK);
+        return new ResponseEntity<>(message, message.getStatus());
     }
 
     // 선택 게시글 삭제
     @DeleteMapping("/bulletin-boards/{id}")
     public ResponseEntity<Object> remove(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
-        ResultDto resultDto = null;
+        OkMessage okMessage = null;
         try {
-            resultDto = bulletinBoardService.softDelete(id, memberDetails.getMember());
+            okMessage = bulletinBoardService.softDelete(id, memberDetails.getMember());
         } catch (IllegalAccessException e) {
-            return new ResponseEntity<>(new ExceptionMessage(e.getMessage(), BAD_REQUEST), BAD_REQUEST);
+            ExceptionMessage exceptionMessage = new ExceptionMessage(e.getMessage(), BAD_REQUEST);
+            return new ResponseEntity<>(exceptionMessage, exceptionMessage.getStatus());
         }
 
-        return new ResponseEntity<>(resultDto, OK);
+        return new ResponseEntity<>(okMessage, OK);
     }
 }

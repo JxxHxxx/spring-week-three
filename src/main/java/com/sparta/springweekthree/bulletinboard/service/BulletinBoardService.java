@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import static org.springframework.http.HttpStatus.*;
 
 
 @Service
@@ -47,24 +48,24 @@ public class BulletinBoardService {
     }
 
     @Transactional
-    public ResultDto softDelete(Long id, Member member) throws IllegalAccessException {
+    public OkMessage softDelete(Long id, Member member) throws IllegalAccessException {
         BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
 
         if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
             board.softDelete(true);
-            return new ResultDto(true);
+            return new OkMessage(OK, "삭제 완료", null);
         }
 
         throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     @Transactional
-    public Message update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
+    public OkMessage update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
         BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
 
         if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
             board.update(boardForm);
-            return new Message("수정 성공", new BulletinBoardResponseDto(board));
+            return new OkMessage(OK, "수정 완료", new BulletinBoardResponseDto(board));
         }
         throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
