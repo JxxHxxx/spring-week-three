@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardLikes extends BaseEntity {
 
-    @Id
+    @Id @Column(name = "BOARD_LIKES_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Boolean liked;

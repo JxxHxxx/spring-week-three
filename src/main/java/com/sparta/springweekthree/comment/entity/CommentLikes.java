@@ -1,6 +1,5 @@
 package com.sparta.springweekthree.comment.entity;
 
-import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.util.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLikes extends BaseEntity {
 
-    @Id
+    @Id @Column(name = "COMMENT_LIKES_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Boolean liked;
