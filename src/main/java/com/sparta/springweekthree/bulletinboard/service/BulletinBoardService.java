@@ -32,7 +32,7 @@ public class BulletinBoardService {
 
     public List<BulletinBoardResponseDto> readAll() {
         List<BulletinBoard> boards = bulletinBoardRepository.findAllByOrderByCreateAtDesc()
-                .stream().filter(bulletinBoard -> bulletinBoard.getIsDeleted() == null).collect(Collectors.toList());
+                .stream().filter(bulletinBoard -> bulletinBoard.getIsDeleted() == false).collect(Collectors.toList());
 
         return boards.stream().map(bulletinBoard -> new BulletinBoardResponseDto(bulletinBoard, commentService.read(bulletinBoard.getId()))).collect(Collectors.toList());
     }
@@ -40,7 +40,7 @@ public class BulletinBoardService {
     public BulletinBoardResponseDto readOne(Long id) {
         BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        if (board.getIsDeleted() != null) {
+        if (board.getIsDeleted() == true) {
             throw new IllegalArgumentException("삭제된 게시글입니다.");
         }
 

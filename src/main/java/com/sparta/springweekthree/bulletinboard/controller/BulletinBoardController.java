@@ -5,7 +5,8 @@ import com.sparta.springweekthree.bulletinboard.dto.*;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.comment.service.CommentService;
 import com.sparta.springweekthree.exception.dto.ExceptionMessage;
-import com.sparta.springweekthree.like.service.LikeService;
+import com.sparta.springweekthree.bulletinboard.service.BoardLikeService;
+import com.sparta.springweekthree.bulletinboard.dto.LikeResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class BulletinBoardController {
 
     private final BulletinBoardService bulletinBoardService;
     private final CommentService commentService;
-    private final LikeService likeService;
+    private final BoardLikeService boardLikeService;
 
     // 게시글 작성
     @PostMapping("/bulletin-boards")
@@ -41,9 +42,8 @@ public class BulletinBoardController {
     public BulletinBoardResponseDto readOne(@PathVariable Long id) {
         List<Comment> comments = commentService.read(id);
         BulletinBoardResponseDto board = bulletinBoardService.readOne(id);
-        Integer totalLikes = likeService.calculateLikes(id);
 
-        return new BulletinBoardResponseDto(board, comments, totalLikes);
+        return new BulletinBoardResponseDto(board, comments);
     }
 
     // 선택 게시글 수정
@@ -72,5 +72,19 @@ public class BulletinBoardController {
         }
 
         return new ResponseEntity<>(okMessage, OK);
+    }
+
+    // 게시글 좋아요
+    @GetMapping("/likes/bulletin-boards/{id}")
+    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean isLike = boardLikeService.boardLikes(id, userDetails.getMember());
+
+        if (isLike) {
+            LikeResponseDto responseDto = new LikeResponseDto("좋아요", OK);
+            return new ResponseEntity<>(responseDto, responseDto.getStatus());
+        }
+
+        LikeResponseDto responseDto = new LikeResponseDto("좋아요 취소", OK);
+        return new ResponseEntity<>(responseDto, responseDto.getStatus());
     }
 }

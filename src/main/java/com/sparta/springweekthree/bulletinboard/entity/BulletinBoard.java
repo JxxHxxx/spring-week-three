@@ -4,7 +4,6 @@ import com.sparta.springweekthree.util.BaseEntity;
 import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.member.entity.Member;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +15,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor // (access = AccessLevel.PROTECTED)
 public class BulletinBoard extends BaseEntity {
 
     @Id @Column(name = "BULLETIN_BOARD_ID")
@@ -33,12 +32,14 @@ public class BulletinBoard extends BaseEntity {
 
     @OneToMany(mappedBy = "bulletinBoard", fetch = LAZY)
     private List<Comment> comments = new ArrayList<>();
+    private Integer totalLike;
 
     public BulletinBoard(BulletinBoardForm boardForm, Member member) {
         this.title = boardForm.getTitle();
         this.body = boardForm.getBody();
         this.member = member;
-        this.isDeleted = null;
+        this.isDeleted = false;
+        this.totalLike = 0;
     }
 
     public void update(BulletinBoardForm boardForm) {
@@ -51,5 +52,12 @@ public class BulletinBoard extends BaseEntity {
 
     public void softDelete(Boolean bool) {
         this.isDeleted = bool;
+    }
+
+    protected void like() {
+        this.totalLike += 1;
+    }
+    protected void disLike() {
+        this.totalLike -= 1;
     }
 }

@@ -20,7 +20,7 @@ public class BulletinBoardResponseDto {
     private LocalDateTime createAt;
     private LocalDateTime modifiedAt;
     private Boolean isDeleted;
-    private Integer totalLikes;
+    private Integer totalLike;
 
     public BulletinBoardResponseDto(BulletinBoard board) {
         this.id = board.getId();
@@ -28,6 +28,7 @@ public class BulletinBoardResponseDto {
         this.username = board.readUsername();
         this.comment = board.getComments();
         this.body = board.getBody();
+        this.totalLike = board.getTotalLike();
         this.createAt = board.getCreateAt();
         this.modifiedAt = board.getModifiedAt();
         this.isDeleted = board.getIsDeleted();
@@ -39,20 +40,20 @@ public class BulletinBoardResponseDto {
         this.username = board.readUsername();
         this.comment = comments;
         this.body = board.getBody();
+        this.totalLike = board.getTotalLike();
         this.createAt = board.getCreateAt();
         this.modifiedAt = board.getModifiedAt();
         this.isDeleted = board.getIsDeleted();
     }
-
-    public BulletinBoardResponseDto(BulletinBoardResponseDto board, List<Comment> comments, Integer totalLikes) {
+    public BulletinBoardResponseDto(BulletinBoardResponseDto board, List<Comment> comments) {
         this.id = board.getId();
         this.title = board.getTitle();
         this.username = board.getUsername();
-        this.comment = comments;
         this.body = board.getBody();
+        this.totalLike = board.getTotalLike();
         this.createAt = board.getCreateAt();
         this.modifiedAt = board.getModifiedAt();
         this.isDeleted = board.getIsDeleted();
-        this.totalLikes = totalLikes;
+        this.comment = comments;
     }
 }
