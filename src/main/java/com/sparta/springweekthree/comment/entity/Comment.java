@@ -32,12 +32,14 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "BULLETIN_BOARD_ID")
     @JsonProperty(access = WRITE_ONLY)
     private BulletinBoard bulletinBoard;
+    private Integer totalLike;
 
     public Comment(CommentForm commentForm, BulletinBoard bulletinBoard, String username) {
         this.username = username;
         this.body = commentForm.getBody();
         this.bulletinBoard = bulletinBoard;
         this.isDeleted = false;
+        this.totalLike = 0;
     }
 
     public Comment update(String body) {
@@ -48,5 +50,12 @@ public class Comment extends BaseEntity {
 
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    protected void like() {
+        this.totalLike += 1;
+    }
+    protected void disLike() {
+        this.totalLike -= 1;
     }
 }
