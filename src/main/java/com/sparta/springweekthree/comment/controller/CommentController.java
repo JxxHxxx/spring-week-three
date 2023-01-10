@@ -28,7 +28,7 @@ public class CommentController {
     }
 
     //댓글 수정
-    @PatchMapping("/bulletin-boards/{board-id}/comments/{comment-id}")
+    @PatchMapping("/comments/{comment-id}")
     public ResponseEntity<Object> update(@PathVariable(name = "comment-id") Long commentId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         CommentForm comment = null;
         try {
@@ -42,7 +42,7 @@ public class CommentController {
     }
 
     //댓글 삭제
-    @DeleteMapping("/bulletin-boards/{board-id}/comments/{comment-id}")
+    @DeleteMapping("/comments/{comment-id}")
     public ResponseEntity<Object> softDelete(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
         DeleteMessage deleteMessage = null;
         try {
@@ -56,9 +56,9 @@ public class CommentController {
     }
 
     // 댓글 좋아요
-    @GetMapping("/likes/comments/{id}")
-    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boolean isLike = commentLikeService.commentLikes(id, userDetails.getMember());
+    @GetMapping("/comments/{comment-id}/likes")
+    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean isLike = commentLikeService.commentLikes(commentId, userDetails.getMember());
 
         if (isLike) {
             LikeResponseDto responseDto = new LikeResponseDto("좋아요", OK);
