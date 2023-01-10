@@ -23,7 +23,7 @@ public class CommentController {
 
     //댓글 작성
     @PostMapping("/bulletin-boards/{board-id}/comments")
-    public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) {
+    public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm, @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
         return commentService.write(boardId, commentForm, memberDetails.getMember());
     }
 
@@ -56,8 +56,8 @@ public class CommentController {
     }
 
     // 댓글 좋아요
-    @GetMapping("/comments/{comment-id}/likes")
-    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PostMapping("/comments/{comment-id}/likes")
+    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IllegalAccessException {
         boolean isLike = commentLikeService.commentLikes(commentId, userDetails.getMember());
 
         if (isLike) {

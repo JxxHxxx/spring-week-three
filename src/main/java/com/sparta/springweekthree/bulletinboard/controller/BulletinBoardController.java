@@ -75,11 +75,11 @@ public class BulletinBoardController {
     }
 
     // 게시글 좋아요
-    @GetMapping("/bulletin-boards/{id}/likes")
+    @PostMapping("/bulletin-boards/{id}/likes")
     public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boolean isLike = boardLikeService.boardLikes(id, userDetails.getMember());
 
-        if (isLike) {
+        if(isLike){
             LikeResponseDto responseDto = new LikeResponseDto("좋아요", OK);
             return new ResponseEntity<>(responseDto, responseDto.getStatus());
         }
