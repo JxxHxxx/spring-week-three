@@ -23,24 +23,18 @@ public class CommentLikeService {
     @Transactional
     public boolean commentLikes(Long commentId, Member member) {
         Optional<CommentLikes> optionalLikes = commentLikeRepository.findByComment_IdAndCreateBy(commentId, member.getId());
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_COMMENT.getMessage()));
 
-        comment.isDeletedThenThrow();
+        if (optionalLikes.isEmpty()) {
+            Comment comment = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_COMMENT.getMessage()));
 
-        if (isFirstLikes(optionalLikes, comment)) {
+            comment.isDeletedThenThrow();
+
+            commentLikeRepository.save(new CommentLikes(comment));
             return true;
         }
 
         CommentLikes likes = optionalLikes.get();
         return likes.press();
-    }
-
-    private boolean isFirstLikes(Optional<CommentLikes> optionalLikes, Comment comment) {
-        if (optionalLikes.isEmpty()) {
-            commentLikeRepository.save(new CommentLikes(comment));
-            return true;
-        }
-        return false;
     }
 }

@@ -24,22 +24,17 @@ public class BoardLikeService {
     public boolean boardLikes(Long boardId, Member member) {
         Optional<BoardLikes> optionalLikes = boardLikeRepository.findByBulletinBoard_IdAndCreateBy(boardId, member.getId());
 
-        if (isFirstLike(boardId, optionalLikes)) {
+        if (optionalLikes.isEmpty()) {
+            BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId)
+                    .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
+
+            bulletinBoard.isDeletedThenThrow();
+
+            boardLikeRepository.save(new BoardLikes(bulletinBoard));
             return true;
         }
 
         BoardLikes likes = optionalLikes.get();
         return likes.press();
-    }
-
-    private boolean isFirstLike(Long boardId, Optional<BoardLikes> optionalLikes) {
-        if (optionalLikes.isEmpty()) {
-            BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId)
-                    .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
-
-            boardLikeRepository.save(new BoardLikes(bulletinBoard));
-            return true;
-        }
-        return false;
     }
 }
