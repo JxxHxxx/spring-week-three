@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 @Getter
 @NoArgsConstructor
 public class ExceptionMessage {
+    private Integer statusCode;
     private String msg;
-    private HttpStatus status;
 
-    public ExceptionMessage(String msg, HttpStatus status) {
+    public ExceptionMessage(String msg, HttpStatus statusCode) {
         this.msg = msg;
-        this.status = status;
+        this.statusCode = statusCode.value();
     }
 }

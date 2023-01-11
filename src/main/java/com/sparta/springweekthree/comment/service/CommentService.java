@@ -12,10 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @Service
@@ -27,8 +28,12 @@ public class CommentService {
 
     private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
 
-    public CommentForm write(Long boardId, CommentForm commentForm, Member member) {
+    public CommentForm write(Long boardId, CommentForm commentForm, Member member) throws IllegalAccessException {
         BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId).orElseThrow(); // 게시글 유무 확인
+
+        if (bulletinBoard.getIsDeleted()) {
+            throw new IllegalAccessException("존재하지 않은 게시글입니다.");
+        }
 
         Comment comment = new Comment(commentForm, bulletinBoard, member.getUsername());
         commentRepository.save(comment);
