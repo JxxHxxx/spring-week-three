@@ -63,4 +63,10 @@ public class BulletinBoard extends BaseEntity {
     protected void disLike() {
         this.totalLike -= 1;
     }
+
+    public void isDeletedThenThrow() throws IllegalAccessException {
+        if (this.isDeleted) {
+            throw new IllegalAccessException("삭제된 게시글입니다.");
+        }
+    }
 }
