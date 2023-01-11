@@ -15,27 +15,27 @@ public class CommentLikes extends BaseEntity {
     @Id @Column(name = "COMMENT_LIKES_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean liked;
+    private Boolean isLiked;
 
     @ManyToOne
     @JoinColumn(name = "COMMENT_ID")
     private Comment comment;
 
     public CommentLikes(Comment comment) {
-        this.liked = true;
+        this.isLiked = true;
         this.comment = comment;
         this.comment.like();
     }
 
     public boolean press() {
-        if (this.liked) {
-            this.liked = false;
+        if (this.isLiked) {
+            this.isLiked = false;
             this.comment.disLike();
-            return this.liked;
+            return this.isLiked;
         }
 
-        this.liked = true;
+        this.isLiked = true;
         this.comment.like();
-        return this.liked;
+        return this.isLiked;
     }
 }

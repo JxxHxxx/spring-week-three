@@ -15,27 +15,27 @@ public class BoardLikes extends BaseEntity {
     @Id @Column(name = "BOARD_LIKES_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean liked;
+    private Boolean isLiked;
 
     @ManyToOne
     @JoinColumn(name = "BULLETIN_BOARD_ID")
     private BulletinBoard bulletinBoard;
 
     public BoardLikes(BulletinBoard bulletinBoard) {
-        this.liked = true;
+        this.isLiked = true;
         this.bulletinBoard = bulletinBoard;
         this.bulletinBoard.like();
     }
 
     public boolean press() {
-        if (this.liked) {
-            this.liked = false;
+        if (this.isLiked) {
+            this.isLiked = false;
             this.bulletinBoard.disLike();
-            return this.liked;
+            return this.isLiked;
         }
 
-        this.liked = true;
+        this.isLiked = true;
         this.bulletinBoard.like();
-        return this.liked;
+        return this.isLiked;
     }
 }
