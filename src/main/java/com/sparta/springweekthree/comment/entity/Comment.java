@@ -1,16 +1,16 @@
 package com.sparta.springweekthree.comment.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sparta.springweekthree.util.BaseEntity;
 import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.comment.dto.CommentForm;
+import com.sparta.springweekthree.util.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -51,10 +51,16 @@ public class Comment extends BaseEntity {
     public void softDelete() {
         this.isDeleted = true;
     }
+    public void isDeletedThenThrow() throws IllegalAccessException {
+        if (this.isDeleted) {
+            throw new IllegalAccessException("삭제된 댓글입니다.");
+        }
+    }
 
     protected void like() {
         this.totalLike += 1;
     }
+
     protected void disLike() {
         this.totalLike -= 1;
     }

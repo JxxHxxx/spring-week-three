@@ -21,19 +21,24 @@ public class CommentLikeService {
     @Transactional
     public boolean commentLikes(Long commentId, Member member) throws IllegalAccessException {
         Optional<CommentLikes> optionalLikes = commentLikeRepository.findByComment_IdAndCreateBy(commentId, member.getId());
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+        comment.isDeletedThenThrow();
 
-        if (comment.getIsDeleted()) {
-            throw new IllegalAccessException("삭제된 댓글입니다.");
-        }
-
-        if (optionalLikes.isEmpty()) {
-            commentLikeRepository.save(new CommentLikes(comment));
+        if (isFirstLikes(optionalLikes, comment)) {
             return true;
         }
 
         CommentLikes likes = optionalLikes.get();
         return likes.press();
+    }
+
+    private boolean isFirstLikes(Optional<CommentLikes> optionalLikes, Comment comment) {
+        if (optionalLikes.isEmpty()) {
+            commentLikeRepository.save(new CommentLikes(comment));
+            return true;
+        }
+        return false;
     }
 }

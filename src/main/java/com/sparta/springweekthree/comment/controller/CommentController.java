@@ -1,6 +1,6 @@
 package com.sparta.springweekthree.comment.controller;
 
-import com.sparta.springweekthree.bulletinboard.dto.LikeResponseDto;
+import com.sparta.springweekthree.bulletinboard.dto.LikeResponseMessage;
 import com.sparta.springweekthree.comment.dto.CommentForm;
 import com.sparta.springweekthree.comment.dto.DeleteMessage;
 import com.sparta.springweekthree.comment.service.CommentLikeService;
@@ -24,7 +24,8 @@ public class CommentController {
     @PostMapping("/bulletin-boards/{board-id}/comments")
     public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm,
                              @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
-        return commentService.write(boardId, commentForm, memberDetails.getMember());
+
+        return commentService.create(boardId, commentForm, memberDetails.getMember());
     }
 
     //댓글 수정
@@ -32,6 +33,7 @@ public class CommentController {
     public ResponseEntity<Object> update(@PathVariable(name = "comment-id") Long commentId,
                                          @RequestBody CommentForm commentForm,
                                          @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
+
         CommentForm comment = commentService.update(commentId, commentForm, memberDetails.getMember());
         return new ResponseEntity<>(comment, OK);
     }
@@ -47,16 +49,17 @@ public class CommentController {
 
     // 댓글 좋아요
     @PostMapping("/comments/{comment-id}/likes")
-    public ResponseEntity<LikeResponseDto> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId,
-                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IllegalAccessException {
+    public ResponseEntity<LikeResponseMessage> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IllegalAccessException {
+
         boolean isLike = commentLikeService.commentLikes(commentId, userDetails.getMember());
 
         if (isLike){
-            LikeResponseDto responseDto = new LikeResponseDto("좋아요", OK);
+            LikeResponseMessage responseDto = new LikeResponseMessage("좋아요", OK);
             return new ResponseEntity<>(responseDto, responseDto.getStatus());
         }
 
-        LikeResponseDto responseDto = new LikeResponseDto("좋아요 취소", OK);
+        LikeResponseMessage responseDto = new LikeResponseMessage("좋아요 취소", OK);
         return new ResponseEntity<>(responseDto, responseDto.getStatus());
     }
 }

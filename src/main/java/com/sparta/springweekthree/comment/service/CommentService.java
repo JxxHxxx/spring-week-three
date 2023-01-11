@@ -28,12 +28,11 @@ public class CommentService {
 
     private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
 
-    public CommentForm write(Long boardId, CommentForm commentForm, Member member) throws IllegalAccessException {
-        BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId).orElseThrow(); // 게시글 유무 확인
+    public CommentForm create(Long boardId, CommentForm commentForm, Member member) throws IllegalAccessException {
+        BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        if (bulletinBoard.getIsDeleted()) {
-            throw new IllegalAccessException("존재하지 않은 게시글입니다.");
-        }
+        bulletinBoard.isDeletedThenThrow();
 
         Comment comment = new Comment(commentForm, bulletinBoard, member.getUsername());
         commentRepository.save(comment);
@@ -45,7 +44,7 @@ public class CommentService {
     public CommentForm update(Long commentId, CommentForm commentForm, Member member) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
-        if (comment.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+        if (hasAuthority(member, comment)) {
             Comment updateComment = comment.update(commentForm.getBody());
             return new CommentForm(updateComment);
         }
@@ -57,16 +56,25 @@ public class CommentService {
     public DeleteMessage softDelete(Long commentId, Member member) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
-        if (comment.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+        if (hasAuthority(member, comment)) {
             comment.softDelete();
             return new DeleteMessage("삭제 성공", OK);
         }
 
-        throw  new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     public List<Comment> read(Long id) {
         List<Comment> comments = commentRepository.findByBulletinBoard_Id(id);
-        return comments.stream().filter(comment -> comment.getIsDeleted() != true).collect(Collectors.toList());
+
+        return comments.stream().filter(comment -> isExisted(comment)).collect(Collectors.toList());
+    }
+
+    private static boolean isExisted(Comment comment) {
+        return comment.getIsDeleted() == false;
+    }
+
+    private boolean hasAuthority(Member member, Comment comment) {
+        return comment.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN);
     }
 }
