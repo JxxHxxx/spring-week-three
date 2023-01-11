@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.ILLEGAL_ACCESS_UPDATE_OR_DELETE;
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
 import static org.springframework.http.HttpStatus.OK;
 
 
@@ -24,8 +26,6 @@ public class BulletinBoardService {
 
     private final BulletinBoardRepository bulletinBoardRepository;
     private final CommentService commentService;
-
-    private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
 
     public BulletinBoardResponseDto create(BulletinBoardForm boardForm, Member member) {
         BulletinBoard board = new BulletinBoard(boardForm, member);
@@ -43,36 +43,41 @@ public class BulletinBoardService {
 
     public BulletinBoardResponseDto readOne(Long id) {
         BulletinBoard board = bulletinBoardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
+
+        board.isDeletedThenThrow();
+
         BulletinBoardResponseDto boardResponseDto = new BulletinBoardResponseDto(board);
-        
-        boardResponseDto.isDeletedThenThrow();
-        
         return boardResponseDto;
     }
 
     @Transactional
     public BoardResponseMessage softDelete(Long id, Member member) throws IllegalAccessException {
         BulletinBoard board = bulletinBoardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
+
+        board.isDeletedThenThrow();
 
         if (hasAuthority(member, board)) {
             board.softDelete(true);
             return new BoardResponseMessage(OK, "삭제 완료");
         }
 
-        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
     }
 
     @Transactional
     public BoardResponseMessage update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
+        BulletinBoard board = bulletinBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
+
+        board.isDeletedThenThrow();
 
         if (hasAuthority(member, board)) {
             board.update(boardForm);
             return new BoardResponseMessage(OK, "수정 완료", new BulletinBoardResponseDto(board));
         }
-        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
     }
 
     private boolean isExisted(BulletinBoard board) {

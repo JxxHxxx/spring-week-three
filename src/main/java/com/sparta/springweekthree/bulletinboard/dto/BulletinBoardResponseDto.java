@@ -45,10 +45,4 @@ public class BulletinBoardResponseDto {
         this.modifiedAt = board.getModifiedAt();
         this.isDeleted = board.getIsDeleted();
     }
-
-    public void isDeletedThenThrow() {
-        if (this.isDeleted) {
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
-        }
-    }
 }

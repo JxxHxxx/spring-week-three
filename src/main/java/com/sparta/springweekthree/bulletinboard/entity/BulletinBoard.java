@@ -4,6 +4,7 @@ import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.member.entity.Member;
 import com.sparta.springweekthree.util.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,11 +12,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.DELETED_BULLETIN_BOARD;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@NoArgsConstructor // (access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BulletinBoard extends BaseEntity {
 
     @Id @Column(name = "BULLETIN_BOARD_ID")
@@ -64,9 +66,10 @@ public class BulletinBoard extends BaseEntity {
         this.totalLike -= 1;
     }
 
-    public void isDeletedThenThrow() throws IllegalAccessException {
+    public void isDeletedThenThrow() {
         if (this.isDeleted) {
-            throw new IllegalAccessException("삭제된 게시글입니다.");
+            throw new IllegalArgumentException(DELETED_BULLETIN_BOARD.getMessage());
         }
     }
+
 }
