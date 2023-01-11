@@ -2,7 +2,7 @@ package com.sparta.springweekthree.comment.controller;
 
 import com.sparta.springweekthree.bulletinboard.dto.LikeResponseMessage;
 import com.sparta.springweekthree.comment.dto.CommentForm;
-import com.sparta.springweekthree.comment.dto.DeleteMessage;
+import com.sparta.springweekthree.comment.dto.CommentResponseMessage;
 import com.sparta.springweekthree.comment.service.CommentLikeService;
 import com.sparta.springweekthree.comment.service.CommentService;
 import com.sparta.springweekthree.security.UserDetailsImpl;
@@ -30,27 +30,27 @@ public class CommentController {
 
     //댓글 수정
     @PatchMapping("/comments/{comment-id}")
-    public ResponseEntity<Object> update(@PathVariable(name = "comment-id") Long commentId,
+    public ResponseEntity<CommentResponseMessage> update(@PathVariable(name = "comment-id") Long commentId,
                                          @RequestBody CommentForm commentForm,
                                          @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
 
-        CommentForm comment = commentService.update(commentId, commentForm, memberDetails.getMember());
+        CommentResponseMessage comment = commentService.update(commentId, commentForm, memberDetails.getMember());
         return new ResponseEntity<>(comment, OK);
     }
 
     //댓글 삭제
     @DeleteMapping("/comments/{comment-id}")
-    public ResponseEntity<Object> softDelete(@PathVariable(name = "comment-id") Long commentId,
+    public ResponseEntity<CommentResponseMessage> softDelete(@PathVariable(name = "comment-id") Long commentId,
                                              @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
 
-        DeleteMessage deleteMessage = commentService.softDelete(commentId, memberDetails.getMember());
-        return new ResponseEntity<>(deleteMessage, deleteMessage.getHttpStatus());
+        CommentResponseMessage responseMessage = commentService.softDelete(commentId, memberDetails.getMember());
+        return new ResponseEntity<>(responseMessage, responseMessage.getHttpStatus());
     }
 
     // 댓글 좋아요
     @PostMapping("/comments/{comment-id}/likes")
     public ResponseEntity<LikeResponseMessage> doLikeOfBoard(@PathVariable(name = "comment-id") Long commentId,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IllegalAccessException {
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         boolean isLike = commentLikeService.commentLikes(commentId, userDetails.getMember());
 

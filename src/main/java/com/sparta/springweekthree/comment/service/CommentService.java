@@ -3,7 +3,7 @@ package com.sparta.springweekthree.comment.service;
 import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.bulletinboard.repository.BulletinBoardRepository;
 import com.sparta.springweekthree.comment.dto.CommentForm;
-import com.sparta.springweekthree.comment.dto.DeleteMessage;
+import com.sparta.springweekthree.comment.dto.CommentResponseMessage;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.comment.repository.CommentRepository;
 import com.sparta.springweekthree.member.entity.Member;
@@ -41,24 +41,30 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentForm update(Long commentId, CommentForm commentForm, Member member) throws IllegalAccessException {
+    public CommentResponseMessage update(Long commentId, CommentForm commentForm, Member member) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
+
+        comment.isDeletedThenThrow();
 
         if (hasAuthority(member, comment)) {
             Comment updateComment = comment.update(commentForm.getBody());
-            return new CommentForm(updateComment);
+
+            return new CommentResponseMessage("수정 성공", OK, updateComment);
+
         }
 
         throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
     }
 
     @Transactional
-    public DeleteMessage softDelete(Long commentId, Member member) throws IllegalAccessException {
+    public CommentResponseMessage softDelete(Long commentId, Member member) throws IllegalAccessException {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
+
+        comment.isDeletedThenThrow();
 
         if (hasAuthority(member, comment)) {
             comment.softDelete();
-            return new DeleteMessage("삭제 성공", OK);
+            return new CommentResponseMessage("삭제 성공", OK);
         }
 
         throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
