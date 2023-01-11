@@ -1,9 +1,9 @@
 package com.sparta.springweekthree.bulletinboard.entity;
 
-import com.sparta.springweekthree.util.BaseEntity;
 import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
 import com.sparta.springweekthree.comment.entity.Comment;
 import com.sparta.springweekthree.member.entity.Member;
+import com.sparta.springweekthree.util.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,6 +52,9 @@ public class BulletinBoard extends BaseEntity {
 
     public void softDelete(Boolean bool) {
         this.isDeleted = bool;
+    }
+    public boolean isDeleted() {
+        return this.isDeleted;
     }
 
     protected void like() {

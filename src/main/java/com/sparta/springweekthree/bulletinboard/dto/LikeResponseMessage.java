@@ -4,12 +4,12 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class LikeResponseDto {
+public class LikeResponseMessage {
 
     private String msg;
     private HttpStatus status;
 
-    public LikeResponseDto(String msg, HttpStatus status) {
+    public LikeResponseMessage(String msg, HttpStatus status) {
         this.msg = msg;
         this.status = status;
     }

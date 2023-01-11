@@ -45,15 +45,10 @@ public class BulletinBoardResponseDto {
         this.modifiedAt = board.getModifiedAt();
         this.isDeleted = board.getIsDeleted();
     }
-    public BulletinBoardResponseDto(BulletinBoardResponseDto board, List<Comment> comments) {
-        this.id = board.getId();
-        this.title = board.getTitle();
-        this.username = board.getUsername();
-        this.body = board.getBody();
-        this.totalLike = board.getTotalLike();
-        this.createAt = board.getCreateAt();
-        this.modifiedAt = board.getModifiedAt();
-        this.isDeleted = board.getIsDeleted();
-        this.comment = comments;
+
+    public void isDeleted() {
+        if (this.isDeleted) {
+            throw new IllegalArgumentException("삭제된 게시글입니다.");
+        }
     }
 }

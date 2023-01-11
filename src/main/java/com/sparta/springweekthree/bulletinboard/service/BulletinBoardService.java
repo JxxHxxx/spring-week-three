@@ -1,5 +1,8 @@
 package com.sparta.springweekthree.bulletinboard.service;
-import com.sparta.springweekthree.bulletinboard.dto.*;
+
+import com.sparta.springweekthree.bulletinboard.dto.BoardResponseMessage;
+import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardForm;
+import com.sparta.springweekthree.bulletinboard.dto.BulletinBoardResponseDto;
 import com.sparta.springweekthree.bulletinboard.entity.BulletinBoard;
 import com.sparta.springweekthree.bulletinboard.repository.BulletinBoardRepository;
 import com.sparta.springweekthree.comment.service.CommentService;
@@ -11,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import static org.springframework.http.HttpStatus.*;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 @Service
@@ -25,48 +29,57 @@ public class BulletinBoardService {
 
     public BulletinBoardResponseDto create(BulletinBoardForm boardForm, Member member) {
         BulletinBoard board = new BulletinBoard(boardForm, member);
-        BulletinBoard saveBoard = bulletinBoardRepository.save(board);
 
-        return new BulletinBoardResponseDto(saveBoard);
+        return new BulletinBoardResponseDto(bulletinBoardRepository.save(board));
     }
 
     public List<BulletinBoardResponseDto> readAll() {
         List<BulletinBoard> boards = bulletinBoardRepository.findAllByOrderByCreateAtDesc()
-                .stream().filter(bulletinBoard -> bulletinBoard.getIsDeleted() == false).collect(Collectors.toList());
+                .stream().filter(board -> isExisted(board)).collect(Collectors.toList());
 
-        return boards.stream().map(bulletinBoard -> new BulletinBoardResponseDto(bulletinBoard, commentService.read(bulletinBoard.getId()))).collect(Collectors.toList());
+        return boards.stream().map(bulletinBoard -> new BulletinBoardResponseDto(bulletinBoard, commentService.read(bulletinBoard.getId())))
+                .collect(Collectors.toList());
     }
 
     public BulletinBoardResponseDto readOne(Long id) {
-        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-
-        if (board.getIsDeleted() == true) {
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
-        }
-
-        return new BulletinBoardResponseDto(board);
+        BulletinBoard board = bulletinBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        BulletinBoardResponseDto boardResponseDto = new BulletinBoardResponseDto(board);
+        
+        boardResponseDto.isDeleted();
+        
+        return boardResponseDto;
     }
 
     @Transactional
-    public OkMessage softDelete(Long id, Member member) throws IllegalAccessException {
-        BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
+    public BoardResponseMessage softDelete(Long id, Member member) throws IllegalAccessException {
+        BulletinBoard board = bulletinBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+        if (hasAuthority(member, board)) {
             board.softDelete(true);
-            return new OkMessage(OK, "삭제 완료", null);
+            return new BoardResponseMessage(OK, "삭제 완료");
         }
 
         throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
     }
 
     @Transactional
-    public OkMessage update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
+    public BoardResponseMessage update(Long id, BulletinBoardForm boardForm, Member member) throws IllegalAccessException {
         BulletinBoard board = bulletinBoardRepository.findById(id).orElseThrow();
 
-        if (board.getCreateBy().equals(member.getId()) || member.getRole().equals(MemberRole.ADMIN)) {
+        if (hasAuthority(member, board)) {
             board.update(boardForm);
-            return new OkMessage(OK, "수정 완료", new BulletinBoardResponseDto(board));
+            return new BoardResponseMessage(OK, "수정 완료", new BulletinBoardResponseDto(board));
         }
         throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+    }
+
+    private boolean isExisted(BulletinBoard board) {
+        return board.isDeleted() == false;
+    }
+
+    private boolean hasAuthority(Member member, BulletinBoard board) {
+        return member.getId().equals(board.getCreateBy()) || member.getRole().equals(MemberRole.ADMIN);
     }
 }
