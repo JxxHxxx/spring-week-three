@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.DELETED_COMMENT;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -51,9 +52,10 @@ public class Comment extends BaseEntity {
     public void softDelete() {
         this.isDeleted = true;
     }
-    public void isDeletedThenThrow() throws IllegalAccessException {
+
+    public void isDeletedThenThrow() {
         if (this.isDeleted) {
-            throw new IllegalAccessException("삭제된 댓글입니다.");
+            throw new IllegalArgumentException(DELETED_COMMENT.getMessage());
         }
     }
 

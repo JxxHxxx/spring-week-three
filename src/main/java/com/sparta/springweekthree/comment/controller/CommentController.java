@@ -23,7 +23,7 @@ public class CommentController {
     //댓글 작성
     @PostMapping("/bulletin-boards/{board-id}/comments")
     public CommentForm write(@PathVariable(name = "board-id") Long boardId, @RequestBody CommentForm commentForm,
-                             @AuthenticationPrincipal UserDetailsImpl memberDetails) throws IllegalAccessException {
+                             @AuthenticationPrincipal UserDetailsImpl memberDetails) {
 
         return commentService.create(boardId, commentForm, memberDetails.getMember());
     }

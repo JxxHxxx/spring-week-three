@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.NOT_EXISTED_COMMENT;
+
 @Service
 @RequiredArgsConstructor
 public class CommentLikeService {
@@ -19,10 +21,10 @@ public class CommentLikeService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public boolean commentLikes(Long commentId, Member member) throws IllegalAccessException {
+    public boolean commentLikes(Long commentId, Member member) {
         Optional<CommentLikes> optionalLikes = commentLikeRepository.findByComment_IdAndCreateBy(commentId, member.getId());
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_COMMENT.getMessage()));
 
         comment.isDeletedThenThrow();
 

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.ILLEGAL_ACCESS_UPDATE_OR_DELETE;
+import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
@@ -26,11 +28,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BulletinBoardRepository bulletinBoardRepository;
 
-    private final static String ILLEGAL_ACCESS_MESSAGE = "작성자 혹은 관리자만 삭제/수정할 수 있습니다.";
-
-    public CommentForm create(Long boardId, CommentForm commentForm, Member member) throws IllegalAccessException {
+    public CommentForm create(Long boardId, CommentForm commentForm, Member member) {
         BulletinBoard bulletinBoard = bulletinBoardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTED_BULLETIN_BOARD.getMessage()));
 
         bulletinBoard.isDeletedThenThrow();
 
@@ -49,7 +49,7 @@ public class CommentService {
             return new CommentForm(updateComment);
         }
 
-        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
     }
 
     @Transactional
@@ -61,7 +61,7 @@ public class CommentService {
             return new DeleteMessage("삭제 성공", OK);
         }
 
-        throw new IllegalAccessException(ILLEGAL_ACCESS_MESSAGE);
+        throw new IllegalAccessException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
     }
 
     public List<Comment> read(Long id) {
