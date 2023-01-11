@@ -46,7 +46,7 @@ public class BulletinBoardResponseDto {
         this.isDeleted = board.getIsDeleted();
     }
 
-    public void isDeleted() {
+    public void isDeletedThenThrow() {
         if (this.isDeleted) {
             throw new IllegalArgumentException("삭제된 게시글입니다.");
         }

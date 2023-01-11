@@ -46,7 +46,7 @@ public class BulletinBoardService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
         BulletinBoardResponseDto boardResponseDto = new BulletinBoardResponseDto(board);
         
-        boardResponseDto.isDeleted();
+        boardResponseDto.isDeletedThenThrow();
         
         return boardResponseDto;
     }
