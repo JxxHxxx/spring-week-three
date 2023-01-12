@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Slf4j
 @RestControllerAdvice
@@ -28,7 +28,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<ExceptionMessage> illegalAccessExceptionExceptionHandle(IllegalAccessException exception) {
-        ExceptionMessage message = new ExceptionMessage(exception.getMessage(), UNAUTHORIZED);
+        ExceptionMessage message = new ExceptionMessage(exception.getMessage(), FORBIDDEN);
         return new ResponseEntity<>(message, HttpStatus.valueOf(message.getStatusCode()));
     }
 
