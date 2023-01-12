@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
+import static com.sparta.springweekthree.exception.message.ServiceExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
 
 @Service
 @RequiredArgsConstructor

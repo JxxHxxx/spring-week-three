@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
-import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.DELETED_COMMENT;
+import static com.sparta.springweekthree.exception.message.ServiceExceptionMessage.DELETED_COMMENT;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 

@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.DELETED_BULLETIN_BOARD;
+import static com.sparta.springweekthree.exception.message.ServiceExceptionMessage.DELETED_BULLETIN_BOARD;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity

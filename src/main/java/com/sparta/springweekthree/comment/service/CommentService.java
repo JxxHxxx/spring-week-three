@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.ILLEGAL_ACCESS_UPDATE_OR_DELETE;
-import static com.sparta.springweekthree.exception.message.IntegratedExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
+import static com.sparta.springweekthree.exception.message.ServiceExceptionMessage.ILLEGAL_ACCESS_UPDATE_OR_DELETE;
+import static com.sparta.springweekthree.exception.message.ServiceExceptionMessage.NOT_EXISTED_BULLETIN_BOARD;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
